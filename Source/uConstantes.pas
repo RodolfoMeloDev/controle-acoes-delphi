@@ -11,8 +11,8 @@ const
   SEM_REGISTROS = 'Nenhum registro encontrado';
 
 var
-  Layout_StatusInvest: Array of String = ['PRECO', 'DY', 'P/L', 'P/VP', 'MARGEM EBIT', 'EV/EBIT', 'LIQUIDEZ MEDIA DIARIA', 'VALOR DE MERCADO'];
-  Layout_InvestSite: Array of String = ['preço', 'div.yield', 'p/l', 'p/vpa', 'magem ebit', 'ev/ebit', 'volume financ.(r$)', 'market cap(r$)'];
+  Layout_StatusInvest: Array of String = ['PRECO', 'DY', 'P/L', 'P/VP', 'MARGEM EBIT', 'EV/EBIT', 'LIQUIDEZ MEDIA DIARIA', 'VALOR DE MERCADO', 'ROIC'];
+  Layout_InvestSite: Array of String = ['preço', 'div.yield', 'p/l', 'p/vpa', 'magem ebit', 'ev/ebit', 'volume financ.(r$)', 'market cap(r$)', 'roic'];
 
 type
   TTipoManutencao = (tmInclusao, tmAlteracao, tmVisualizacao, tmExclusao);

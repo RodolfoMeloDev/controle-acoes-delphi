@@ -36,7 +36,7 @@ type
 
 const
   const_pesquisa = 'select t.recuperacao_judicial, t.ticker, t.nome, a2."data", h.precounitario, h.dividend_yield, h.preco_por_lucro, h.preco_por_valor_patrimonial,' + #13 +
-                   '	   h.margem_ebit, h.ev_por_ebit, h.liquidez_media_diaria, h.volume_financeiro, h.valor_mercado,	t.empresa, t.cnpj, t.descricao, t.site' + #13 +
+                   '	   h.margem_ebit, h.ev_por_ebit, h.liquidez_media_diaria, h.volume_financeiro, h.valor_mercado,	t.empresa, t.cnpj, t.descricao, t.site, h.roic' + #13 +
                    'from dbo.tickers t' + #13 +
                    'left join dbo.historicosimportacao h on h.ticker  = t.ticker and' + #13 +
                    '										h.arquivoimportacao = (select max(a.arquivoimportacao) arquivoimportacao from dbo.arquivosimportacao a where a.usuario = :usuario)' + #13 +

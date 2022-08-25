@@ -297,7 +297,10 @@ begin
           poAcao.VolumeFinanceiro := StrToCurr(Linha[coluna.Value])
         else
         if ((coluna.Key = 'VALOR DE MERCADO') or (coluna.Key = 'market cap(r$)')) and (Trim(Linha[coluna.Value]) <> EmptyStr) then
-          poAcao.ValorMercado := StrToCurr(Linha[coluna.Value]);
+          poAcao.ValorMercado := StrToCurr(Linha[coluna.Value])
+        else
+        if (coluna.Key = 'ROIC') and (Trim(Linha[coluna.Value]) <> EmptyStr) then
+          poAcao.Roic := StrToCurrDef(Linha[coluna.Value], 0);
       end;
     end;
   finally

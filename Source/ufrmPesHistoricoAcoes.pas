@@ -32,7 +32,7 @@ type
 
 const
   const_pesquisa ='select a."data", h.ticker, h.precounitario, h.dividend_yield, h.preco_por_lucro, h.preco_por_valor_patrimonial, h.margem_ebit,' + #13 +
-                  '	   h.ev_por_ebit, h.liquidez_media_diaria, h.volume_financeiro, h.valor_mercado' + #13 +
+                  '	   h.ev_por_ebit, h.liquidez_media_diaria, h.volume_financeiro, h.valor_mercado, h.roic' + #13 +
                   'from dbo.historicosimportacao h' + #13 +
                   'inner join dbo.tickers t on t.ticker = h.ticker' + #13 +
                   'inner join dbo.arquivosimportacao a on a.arquivoimportacao = h.arquivoimportacao ' + #13 +

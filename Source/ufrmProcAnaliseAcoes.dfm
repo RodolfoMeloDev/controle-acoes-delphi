@@ -253,15 +253,16 @@ object frmProcAnaliseAcoes: TfrmProcAnaliseAcoes
         object rdgTipoAnalise: TRadioGroup
           Left = 24
           Top = 190
-          Width = 306
+          Width = 413
           Height = 40
           Caption = 'Tipo Anal'#237'se '
-          Columns = 3
+          Columns = 4
           ItemIndex = 0
           Items.Strings = (
             'E.Y'
             'P/L'
-            'E.Y + P/L')
+            'E.Y + P/L'
+            'E.Y Greenblatt')
           TabOrder = 1
           OnClick = rdgTipoAnaliseClick
         end
@@ -613,6 +614,13 @@ object frmProcAnaliseAcoes: TfrmProcAnaliseAcoes
           end
           item
             Expanded = False
+            FieldName = 'roic'
+            Title.Caption = 'ROIC'
+            Width = 70
+            Visible = True
+          end
+          item
+            Expanded = False
             FieldName = 'margem_ebit'
             Title.Caption = 'Margem Ebit'
             Width = 80
@@ -621,15 +629,15 @@ object frmProcAnaliseAcoes: TfrmProcAnaliseAcoes
           item
             Expanded = False
             FieldName = 'liquidez_media_diaria'
-            Title.Caption = 'Liquidez M'#233'dia Di'#225'ria'
-            Width = 140
+            Title.Caption = 'Liq. M'#233'd. Di'#225'ria'
+            Width = 105
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'volume_financeiro'
-            Title.Caption = 'Volume Financerio'
-            Width = 140
+            Title.Caption = 'Vol. Financerio'
+            Width = 105
             Visible = True
           end>
       end

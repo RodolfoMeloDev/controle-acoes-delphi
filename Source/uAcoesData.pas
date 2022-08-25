@@ -33,6 +33,7 @@ type
     FLiquidezDiaria: Currency;
     FVolumeFinanceiro: Currency;
     FValorMercado: Currency;
+    FRoic: Currency;
 
     FTipoAcao: TTipoAcao;
     function BuscaProximaChaveHistorico: Integer;
@@ -57,6 +58,7 @@ type
     property LiquidezDiaria: Currency read FLiquidezDiaria write FLiquidezDiaria;
     property VolumeFinanceiro: Currency read FVolumeFinanceiro write FVolumeFinanceiro;
     property ValorMercado: Currency read FValorMercado write FValorMercado;
+    property Roic: Currency read FRoic write FRoic;
 
     function Inserir(var sErro: String): Boolean;
     function InserirDetalhes(pnArquivoImportacaoAcao: Integer; var sErro: String): Boolean;
@@ -74,9 +76,9 @@ const
                  'VALUES(:ticker, :nome, :empresa, :cnpj, :descricao, :site, :tipo, :letras)';
 
   qry_Inclusao_Detalhes = 'INSERT INTO dbo.historicosimportacao (historicoimportacao, arquivoimportacao, ticker, precounitario, dividend_yield, preco_por_lucro, preco_por_valor_patrimonial, margem_ebit,' + #13 +
-                          '                                      ev_por_ebit, liquidez_media_diaria, volume_financeiro, valor_mercado)' + #13 +
+                          '                                      ev_por_ebit, liquidez_media_diaria, volume_financeiro, valor_mercado, roic)' + #13 +
                           'values (:historicoimportacao, :arquivoimportacao, :ticker, :precounitario, :dividend_yield, :preco_por_lucro, :preco_por_valor_patrimonial, :margem_ebit,' + #13 +
-                          '		     :ev_por_ebit, :liquidez_media_diaria, :volume_financeiro, :valor_mercado)';
+                          '		     :ev_por_ebit, :liquidez_media_diaria, :volume_financeiro, :valor_mercado, :roic)';
 
   qry_Busca_Acao = 'SELECT ticker tipo FROM dbo.tickers where ticker = :ticker';
 
@@ -178,6 +180,7 @@ begin
       qryBD.ParamByName('preco_por_lucro').AsCurrency := FPL;
       qryBD.ParamByName('margem_ebit').AsFloat := FMargemEbit;
       qryBD.ParamByName('ev_por_ebit').AsFloat := FEVEbit;
+      qryBD.ParamByName('roic').AsFloat := FRoic;
 
       if FDY <> 0 then
         qryBD.ParamByName('dividend_yield').AsFloat := FDY

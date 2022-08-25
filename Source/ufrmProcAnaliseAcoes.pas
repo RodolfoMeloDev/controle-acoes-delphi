@@ -74,7 +74,9 @@ type
     procedure RemoverItensZerados(var cdsDados: TClientDataSet);
     procedure RemoverItensMenorLiquidez(var cdsDados: TClientDataSet);
 
-    procedure AtualizaPosicao(var cdsDados: TClientDataSet);
+    procedure AtualizaPosicao(var cdsDados: TClientDataSet; sCampo: String);
+
+    procedure AdicionaPosicaoPonderada(var cdsDados: TClientDataSet);
 
   public
     { Public declarations }
@@ -93,8 +95,14 @@ const
   IDX_MISTO = 'MISTO';
   IDX_CAMPOS_MISTO = 'ev_por_ebit;preco_por_lucro';
 
+  IDX_ROIC = 'ROIC';
+  IDX_CAMPOS_ROIC = 'roic';
+
+  IDX_GREENBLATT = 'GREENBLATT';
+  IDX_CAMPOS_GREENBLATT = 'posicao_ponderada';
+
   const_consulta = 'select t.letras, h.ticker, h.precounitario, h.dividend_yield, h.preco_por_lucro, h.ev_por_ebit, h.margem_ebit, h.liquidez_media_diaria, h.volume_financeiro,' + #13 +
-                   ' t.recuperacao_judicial rj, st.nomesetor, ss.nomesubsetor, s.nomesegmento' + #13 +
+                   ' t.recuperacao_judicial rj, st.nomesetor, ss.nomesubsetor, s.nomesegmento, h.roic' + #13 +
                    'from dbo.historicosimportacao h' + #13 +
                    'inner join dbo.tickers t on t.ticker = h.ticker' + #13 +
                    'left join dbo.segmentos s on s.segmento = t.segmento' + #13 +
@@ -168,14 +176,19 @@ begin
     cdsAcoes.IndexName := IfThen(rdgTipoAnalise.ItemIndex = 0, IDX_EY, IfThen(rdgTipoAnalise.ItemIndex = 1, IDX_PL, IDX_MISTO));
 end;
 
-procedure TfrmProcAnaliseAcoes.AtualizaPosicao(var cdsDados: TClientDataSet);
+procedure TfrmProcAnaliseAcoes.AtualizaPosicao(var cdsDados: TClientDataSet; sCampo: String);
 begin
   cdsDados.First;
+
+  cdsDados.SaveToFile('d:\teste.xml', dfXML);
 
   while not cdsDados.Eof do
   begin
     cdsDados.Edit;
-    cdsDados.FieldByName('posicao').AsInteger := cdsDados.RecNo;
+    if sCampo = 'posicao' then
+      cdsDados.FieldByName(sCampo).AsInteger := cdsDados.RecNo
+    else
+      cdsDados.FieldByName(sCampo).AsInteger := (cdsDados.RecordCount - cdsDados.RecNo) + 1;
     cdsDados.Post;
 
     cdsDados.Next;
@@ -189,6 +202,9 @@ begin
   cdsAcoes := TClientDataSet.Create(nil);
   cdsAcoes.FieldDefs.Clear;
   cdsAcoes.FieldDefs.add('posicao', ftInteger);
+  cdsAcoes.FieldDefs.add('posicao_por_ev_ebit', ftInteger);
+  cdsAcoes.FieldDefs.add('posicao_por_roic', ftInteger);
+  cdsAcoes.FieldDefs.add('posicao_ponderada', ftInteger);
   cdsAcoes.FieldDefs.add('rj', ftString, 10);
   cdsAcoes.FieldDefs.add('acao', ftString, 10);
   cdsAcoes.FieldDefs.add('ticker', ftString, 10);
@@ -196,6 +212,7 @@ begin
   cdsAcoes.FieldDefs.add('dividend_yield', ftFloat);
   cdsAcoes.FieldDefs.add('preco_por_lucro', ftFloat);
   cdsAcoes.FieldDefs.add('ev_por_ebit', ftFloat);
+  cdsAcoes.FieldDefs.add('roic', ftFloat);
   cdsAcoes.FieldDefs.add('margem_ebit', ftFloat);
   cdsAcoes.FieldDefs.add('liquidez_media_diaria', ftCurrency);
   cdsAcoes.FieldDefs.add('volume_financeiro', ftCurrency);
@@ -209,6 +226,8 @@ begin
   cdsAcoes.IndexDefs.Add(IDX_EY, IDX_CAMPOS_EY, []);
   cdsAcoes.IndexDefs.Add(IDX_PL, IDX_CAMPOS_PL, []);
   cdsAcoes.IndexDefs.Add(IDX_MISTO, IDX_CAMPOS_MISTO, []);
+  cdsAcoes.IndexDefs.Add(IDX_ROIC, IDX_CAMPOS_ROIC, [ixDescending]);
+  cdsAcoes.IndexDefs.Add(IDX_GREENBLATT, IDX_CAMPOS_GREENBLATT, [ixDescending]);
 
   // formata os campos
   TCurrencyField(cdsAcoes.Fields.FieldByName('precounitario')).DisplayFormat := '###,###,###,##0.00';
@@ -236,12 +255,16 @@ begin
     cdsDados.FieldByName('dividend_yield').AsFloat := Query.FieldByName('dividend_yield').AsFloat;
     cdsDados.FieldByName('preco_por_lucro').AsFloat := Query.FieldByName('preco_por_lucro').AsFloat;
     cdsDados.FieldByName('ev_por_ebit').AsFloat := Query.FieldByName('ev_por_ebit').AsFloat;
+    cdsDados.FieldByName('roic').AsFloat := Query.FieldByName('roic').AsFloat;
     cdsDados.FieldByName('margem_ebit').AsFloat := Query.FieldByName('margem_ebit').AsFloat;
     cdsDados.FieldByName('liquidez_media_diaria').AsCurrency := Query.FieldByName('liquidez_media_diaria').AsCurrency;
     cdsDados.FieldByName('volume_financeiro').AsCurrency := Query.FieldByName('volume_financeiro').AsCurrency;
     cdsDados.FieldByName('setor').AsString := Query.FieldByName('nomesetor').AsString;
     cdsDados.FieldByName('subsetor').AsString := Query.FieldByName('nomesubsetor').AsString;
     cdsDados.FieldByName('segmento').AsString := Query.FieldByName('nomesegmento').AsString;
+    cdsDados.FieldByName('posicao_por_ev_ebit').AsInteger := 0;
+    cdsDados.FieldByName('posicao_por_roic').AsInteger := 0;
+    cdsDados.FieldByName('posicao_ponderada').AsInteger := 0;
     cdsDados.Post;
 
     Query.Next;
@@ -282,8 +305,8 @@ begin
     cdsDados.First;
     while not cdsAcoes.Eof do
     begin
-      if (cdsDados.FieldByName('preco_por_lucro').AsCurrency = 0) or
-         (cdsDados.FieldByName('ev_por_ebit').AsCurrency = 0) or
+      if (cdsDados.FieldByName('ev_por_ebit').AsCurrency = 0) or
+         (cdsDados.FieldByName('preco_por_lucro').AsCurrency = 0) or
          ((cdsDados.FieldByName('liquidez_media_diaria').AsCurrency = 0) and (cdsDados.FieldByName('volume_financeiro').AsCurrency = 0))
       then
         cdsDados.Delete
@@ -300,9 +323,8 @@ begin
     cdsDados.First;
     while not cdsAcoes.Eof do
     begin
-      if (cdsDados.FieldByName('preco_por_lucro').AsCurrency < 0) or
-         (cdsDados.FieldByName('ev_por_ebit').AsCurrency < 0) or
-         (cdsDados.FieldByName('margem_ebit').AsCurrency < 0)
+      if (cdsDados.FieldByName('ev_por_ebit').AsCurrency < 0) or
+         (cdsDados.FieldByName('preco_por_lucro').AsCurrency < 0)
       then
         cdsDados.Delete
       else
@@ -373,8 +395,22 @@ begin
     RemoverItensMenorLiquidez(cdsAcoes);
 
     // ordena pelo tipo de analise
-    cdsAcoes.IndexName := IfThen(rdgTipoAnalise.ItemIndex = 0, IDX_EY, IfThen(rdgTipoAnalise.ItemIndex = 1, IDX_PL, IDX_MISTO));
-    AtualizaPosicao(cdsAcoes);
+    if rdgTipoAnalise.ItemIndex = 3 then
+    begin
+      cdsAcoes.IndexName := IDX_EY;
+      AtualizaPosicao(cdsAcoes, 'posicao_por_ev_ebit');
+
+      cdsAcoes.IndexName := IDX_ROIC;
+      AtualizaPosicao(cdsAcoes, 'posicao_por_roic');
+
+      AdicionaPosicaoPonderada(cdsAcoes);
+
+      cdsAcoes.IndexName := IDX_GREENBLATT;
+    end
+    else
+      cdsAcoes.IndexName := IfThen(rdgTipoAnalise.ItemIndex = 0, IDX_EY, IfThen(rdgTipoAnalise.ItemIndex = 1, IDX_PL, IDX_MISTO));
+
+    AtualizaPosicao(cdsAcoes, 'posicao');
 
     // liga o grid
     dtsAcoes.DataSet := cdsAcoes;
@@ -515,6 +551,24 @@ begin
     CloseFile(oArquivo);
     FreeAndNil(cdsClone);
   end;
+end;
+
+procedure TfrmProcAnaliseAcoes.AdicionaPosicaoPonderada(var cdsDados: TClientDataSet);
+begin
+  cdsDados.First;
+
+  while not cdsDados.Eof do
+  begin
+    cdsDados.Edit;
+    cdsDados.FieldByName('posicao_ponderada').AsInteger :=
+      cdsDados.FieldByName('posicao_por_ev_ebit').AsInteger +
+      cdsDados.FieldByName('posicao_por_roic').AsInteger;
+    cdsDados.Post;
+
+    cdsDados.Next;
+  end;
+
+  cdsDados.First;
 end;
 
 end.

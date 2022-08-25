@@ -2,6 +2,7 @@ inherited frmPesHistoricoAcoes: TfrmPesHistoricoAcoes
   Caption = 'Pesquisa de Hist'#243'rico de A'#231#245'es'
   ClientHeight = 448
   ClientWidth = 1093
+  ExplicitLeft = -316
   ExplicitWidth = 1109
   ExplicitHeight = 487
   PixelsPerInch = 96
@@ -218,6 +219,13 @@ inherited frmPesHistoricoAcoes: TfrmPesHistoricoAcoes
         Visible = True
       end
       item
+        Expanded = False
+        FieldName = 'roic'
+        Title.Caption = 'ROIC'
+        Width = 70
+        Visible = True
+      end
+      item
         Alignment = taRightJustify
         Expanded = False
         FieldName = 'liquidez_media_diaria'
@@ -230,7 +238,7 @@ inherited frmPesHistoricoAcoes: TfrmPesHistoricoAcoes
         Expanded = False
         FieldName = 'volume_financeiro'
         Title.Caption = 'Volume Financeiro'
-        Width = 130
+        Width = 95
         Visible = True
       end
       item
@@ -238,7 +246,7 @@ inherited frmPesHistoricoAcoes: TfrmPesHistoricoAcoes
         Expanded = False
         FieldName = 'valor_mercado'
         Title.Caption = 'Valor Mercado'
-        Width = 130
+        Width = 95
         Visible = True
       end>
   end
@@ -304,7 +312,7 @@ inherited frmPesHistoricoAcoes: TfrmPesHistoricoAcoes
         'preco_por_lucro, h.preco_por_valor_patrimonial, h.margem_ebit,'
       
         #9'   h.ev_por_ebit, h.liquidez_media_diaria, h.volume_financeiro,' +
-        ' h.valor_mercado '
+        ' h.valor_mercado, h.roic'
       'from dbo.historicosimportacao h '
       'inner join dbo.tickers t on t.ticker = h.ticker '
       

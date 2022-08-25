@@ -2,6 +2,7 @@ inherited frmPesAcoes: TfrmPesAcoes
   Caption = 'Pesquisa de A'#231#245'es'
   ClientHeight = 541
   ClientWidth = 1104
+  ExplicitLeft = -357
   ExplicitWidth = 1120
   ExplicitHeight = 580
   PixelsPerInch = 96
@@ -127,11 +128,18 @@ inherited frmPesAcoes: TfrmPesAcoes
         Visible = True
       end
       item
+        Expanded = False
+        FieldName = 'roic'
+        Title.Caption = 'ROIC'
+        Width = 70
+        Visible = True
+      end
+      item
         Alignment = taRightJustify
         Expanded = False
         FieldName = 'liquidez_media_diaria'
         Title.Caption = 'Liq. M'#233'dia Di'#225'ria'
-        Width = 130
+        Width = 95
         Visible = True
       end
       item
@@ -139,7 +147,7 @@ inherited frmPesAcoes: TfrmPesAcoes
         Expanded = False
         FieldName = 'volume_financeiro'
         Title.Caption = 'Volume Financeiro'
-        Width = 130
+        Width = 95
         Visible = True
       end
       item
@@ -203,15 +211,13 @@ inherited frmPesAcoes: TfrmPesAcoes
       
         #9'   h.margem_ebit, h.ev_por_ebit, h.liquidez_media_diaria, h.vol' +
         'ume_financeiro, h.valor_mercado,'#9't.empresa, t.cnpj, t.descricao,' +
-        ' t.site '
+        ' t.site, h.roic'
       'from dbo.tickers t'
       
         'left join dbo.historicosimportacao h on h.ticker  = t.ticker and' +
-        ' '
-      
-        #9#9#9#9#9#9#9#9#9#9'h.arquivoimportacao = (select max(a.arquivoimportacao)' +
-        ' arquivoimportacao from dbo.arquivosimportacao a where a.usuario' +
-        ' = :usuario)'#9#9#9#9#9#9#9#9#9#9
+        ' '#9#9#9#9#9#9#9#9#9#9'h.arquivoimportacao = (select max(a.arquivoimportacao' +
+        ') arquivoimportacao from dbo.arquivosimportacao a where a.usuari' +
+        'o = :usuario)'#9#9#9#9#9#9#9#9#9#9
       
         'left join dbo.arquivosimportacao a2 on a2.arquivoimportacao = h.' +
         'arquivoimportacao ')
